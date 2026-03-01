@@ -1,0 +1,54 @@
+-- =========================================================
+-- Problem: 596. Classes With at Least 5 Students
+-- Category: Aggregation
+-- =========================================================
+--
+-- Core Query Logic:
+-- Find classes that have at least 5 students enrolled.
+--
+-- Steps:
+--   1. GROUP BY class
+--   2. COUNT number of students
+--   3. Filter using HAVING COUNT >= 5
+--
+-- Schema & Relationship Understanding:
+-- Table: Courses
+--   student (VARCHAR)
+--   class   (VARCHAR)
+--
+-- Each row represents one student enrolled in one class.
+--
+-- Important:
+-- If duplicate (student, class) rows exist,
+-- they will inflate the count unless handled.
+--
+-- Join Strategy Explanation:
+-- Not applicable (single-table aggregation).
+--
+-- Time Complexity Consideration:
+-- O(n) table scan with grouping.
+--
+-- Indexing & Performance Thoughts:
+-- Recommended index:
+--
+-- CREATE INDEX idx_courses_class
+-- ON Courses(class);
+--
+-- If duplicate prevention is required:
+-- Consider UNIQUE constraint on (student, class).
+--
+-- Edge Case Handling:
+-- - If duplicates exist, COUNT(*) may overcount.
+-- - If data integrity is guaranteed, COUNT(*) is correct.
+-- - Only classes with >= 5 students should appear.
+--
+-- Execution Order Reminder:
+-- FROM → GROUP BY → HAVING → SELECT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT class
+FROM Courses
+GROUP BY class
+HAVING COUNT(DISTINCT student) >= 5;
