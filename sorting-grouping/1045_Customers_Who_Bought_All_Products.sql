@@ -1,0 +1,63 @@
+-- =========================================================
+-- Problem: 1045. Customers Who Bought All Products
+-- Category: Aggregation / Relational Division
+-- =========================================================
+--
+-- Core Query Logic:
+-- Find customers who purchased ALL products.
+--
+-- This means:
+--   For each customer,
+--   COUNT(DISTINCT product_key purchased)
+--   =
+--   TOTAL number of products in Product table.
+--
+-- This is a classic relational division pattern.
+--
+-- Schema & Relationship Understanding:
+-- Table: Customer
+--   customer_id (INT)
+--   product_key (INT)
+--
+-- Table: Product
+--   product_key (INT, Primary Key)
+--
+-- Relationship:
+-- Many-to-many:
+--   Customers can buy many products.
+--
+-- Join Strategy Explanation:
+-- No join required in main query.
+-- Use subquery to compute total product count.
+--
+-- Time Complexity Consideration:
+-- O(n) grouping on Customer table.
+-- Subquery for product count computed once.
+--
+-- Indexing & Performance Thoughts:
+-- Recommended indexes:
+--
+-- CREATE INDEX idx_customer_customer_product
+-- ON Customer(customer_id, product_key);
+--
+-- Product.product_key should be PRIMARY KEY.
+--
+-- COUNT(DISTINCT) benefits from composite indexing.
+--
+-- Edge Case Handling:
+-- - Duplicate purchases must not inflate counts.
+--   Hence COUNT(DISTINCT product_key).
+-- - If Product table is empty, all customers logically qualify.
+-- - Customers who purchased zero products are excluded.
+--
+-- Execution Order Reminder:
+-- FROM → GROUP BY → HAVING → SELECT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT customer_id
+FROM Customer
+GROUP BY customer_id
+HAVING COUNT(DISTINCT product_key) =
+       (SELECT COUNT(*) FROM Product);
