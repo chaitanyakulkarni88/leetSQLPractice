@@ -1,10 +1,10 @@
-🚀** LeetSQL50 – Interview Preparation**
+🚀 **LeetSQL50 – Interview Preparation**
 
 This repository contains structured and production-style solutions to the Top 50 SQL Interview Problems (https://leetcode.com/studyplan/top-sql-50/).
 
 The goal is to strengthen SQL skills required for interviews, focusing not only on correctness — but also on performance, scalability, and clean query design.
 
-🎯** Objective**
+🎯 **Objective**
 
 Write clean and optimized queries
 
@@ -82,15 +82,8 @@ Avoiding Cartesian products
 
 Writing maintainable SQL
 
-🛠 **SQL Dialect**
-
-Primary: MySQL (LeetCode compatible)
-Adaptable to: PostgreSQL / SQL Server
-
 📈 **Progress**
 
-🔄 Easy – In Progress
-
-🔄 Medium – In Progress
-
-⬜ Hard – Planned
+🔄 Easy – Completed
+🔄 Medium – Completed
+⬜ Hard – Completed
