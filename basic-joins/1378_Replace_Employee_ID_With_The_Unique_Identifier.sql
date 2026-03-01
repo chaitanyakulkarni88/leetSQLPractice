@@ -1,0 +1,63 @@
+-- =========================================================
+-- Problem: 1378. Replace Employee ID With The Unique Identifier
+-- Category: Basic Joins
+-- =========================================================
+--
+-- Core Query Logic:
+-- Retrieve each employee's unique_id along with their name.
+-- If an employee does not have a matching unique_id,
+-- return NULL for unique_id.
+--
+-- This requires a LEFT JOIN from Employees to EmployeeUNI.
+--
+-- Schema & Relationship Understanding:
+-- Table: Employees
+--   id    (Primary Key)
+--   name  (VARCHAR)
+--
+-- Table: EmployeeUNI
+--   id         (Foreign Key → Employees.id)
+--   unique_id  (INT)
+--
+-- Relationship:
+-- One-to-zero/one relationship:
+--   Employees.id = EmployeeUNI.id
+--
+-- Join Strategy Explanation:
+-- LEFT JOIN is required because:
+-- - We must return ALL employees.
+-- - Some employees may not have a unique_id.
+--
+-- Using INNER JOIN would incorrectly exclude employees
+-- without a matching unique_id.
+--
+-- Time Complexity Consideration:
+-- O(n + m) depending on indexing and join strategy.
+-- Typically optimized via index lookup.
+--
+-- Indexing & Performance Thoughts:
+-- For efficient joins in production:
+--   - Employees.id should be PRIMARY KEY (indexed).
+--   - EmployeeUNI.id should be indexed (preferably PRIMARY or UNIQUE).
+--
+-- Example:
+-- CREATE INDEX idx_employeeuni_id
+-- ON EmployeeUNI(id);
+--
+-- This allows efficient hash or nested loop joins.
+--
+-- Edge Case Handling:
+-- - Employees without unique_id should still appear.
+-- - LEFT JOIN ensures NULL is returned for missing matches.
+-- - Assumes id columns are consistent data types.
+--
+-- Execution Order Reminder:
+-- FROM → JOIN → SELECT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT u.unique_id, e.name
+FROM Employees e
+LEFT JOIN EmployeeUNI u
+       ON e.id = u.id;
