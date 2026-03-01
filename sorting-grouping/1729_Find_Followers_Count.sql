@@ -1,0 +1,61 @@
+-- =========================================================
+-- Problem: 1729. Find Followers Count
+-- Category: Aggregation
+-- =========================================================
+--
+-- Core Query Logic:
+-- For each user, count how many followers they have.
+--
+-- Important:
+-- We group by user_id (the person being followed),
+-- not follower_id.
+--
+-- Steps:
+--   1. GROUP BY user_id
+--   2. COUNT number of follower_id entries
+--
+-- Schema & Relationship Understanding:
+-- Table: Followers
+--   user_id     (INT)  -- user being followed
+--   follower_id (INT)  -- user who follows
+--
+-- Each row represents:
+--   follower_id follows user_id.
+--
+-- Join Strategy Explanation:
+-- Not applicable (single-table aggregation).
+--
+-- Time Complexity Consideration:
+-- O(n) table scan with grouping.
+--
+-- Indexing & Performance Thoughts:
+-- Recommended index:
+--
+-- CREATE INDEX idx_followers_user
+-- ON Followers(user_id);
+--
+-- This improves grouping efficiency.
+--
+-- If duplicate follow relationships are possible,
+-- consider UNIQUE constraint:
+--
+-- UNIQUE (user_id, follower_id)
+--
+-- Edge Case Handling:
+-- - If duplicate (user_id, follower_id) rows exist,
+--   COUNT(*) would overcount.
+-- - Use COUNT(DISTINCT follower_id) if duplicates are possible.
+-- - Users with zero followers are not included
+--   (per problem statement).
+--
+-- Execution Order Reminder:
+-- FROM → GROUP BY → SELECT → ORDER BY
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT user_id,
+       COUNT(DISTINCT follower_id) AS followers_count
+FROM Followers
+GROUP BY user_id
+ORDER BY user_id;
