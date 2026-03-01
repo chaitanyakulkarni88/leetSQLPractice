@@ -1,0 +1,54 @@
+-- =========================================================
+-- Problem: 2356. Number of Unique Subjects Taught by Each Teacher
+-- Category: Aggregation
+-- =========================================================
+--
+-- Core Query Logic:
+-- For each teacher, count the number of DISTINCT subjects taught.
+--
+-- Key Requirement:
+-- A teacher may appear multiple times for the same subject.
+-- We must count unique subject_id values only.
+--
+-- Schema & Relationship Understanding:
+-- Table: Teacher
+--   teacher_id (INT)
+--   subject_id (INT)
+--   dept_id    (INT)
+--
+-- Each row represents a subject taught by a teacher.
+-- Duplicate (teacher_id, subject_id) combinations may exist.
+--
+-- Join Strategy Explanation:
+-- Not applicable (single-table aggregation).
+--
+-- Time Complexity Consideration:
+-- O(n) table scan.
+-- COUNT(DISTINCT subject_id) may require hashing or sorting internally.
+--
+-- Indexing & Performance Thoughts:
+-- Recommended index:
+--
+-- CREATE INDEX idx_teacher_teacher_subject
+-- ON Teacher(teacher_id, subject_id);
+--
+-- This improves DISTINCT grouping efficiency.
+--
+-- For very large datasets, pre-aggregated summary tables
+-- may be considered in production systems.
+--
+-- Edge Case Handling:
+-- - Duplicate subject entries must not inflate counts.
+-- - COUNT(DISTINCT ...) ensures correctness.
+-- - If a teacher appears once → result = 1.
+--
+-- Execution Order Reminder:
+-- FROM → GROUP BY → SELECT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT teacher_id,
+       COUNT(DISTINCT subject_id) AS cnt
+FROM Teacher
+GROUP BY teacher_id;
