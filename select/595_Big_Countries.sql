@@ -1,0 +1,64 @@
+-- =========================================================
+-- Problem: 595. Big Countries
+-- Category: Select
+-- =========================================================
+--
+-- Core Query Logic:
+-- Retrieve countries that are considered "big".
+-- A country is big if:
+--   area >= 3,000,000
+--   OR
+--   population >= 25,000,000
+--
+-- Schema & Relationship Understanding:
+-- Table: World
+-- Columns:
+--   name        (VARCHAR)
+--   continent   (VARCHAR)
+--   area        (INT)
+--   population  (INT)
+--   gdp         (BIGINT)
+--
+-- Single-table query. No joins involved.
+--
+-- Join Strategy Explanation:
+-- Not applicable (single table).
+--
+-- Time Complexity Consideration:
+-- O(n) full table scan without indexing.
+--
+-- Indexing & Performance Thoughts:
+-- Since this query uses OR conditions across two columns,
+-- a single composite index may not always be fully utilized.
+--
+-- Possible optimizations in production:
+--   - Individual indexes on (area) and (population)
+--   - Query rewrite using UNION to allow better index usage
+--
+-- Example alternative (index-friendly pattern):
+--
+-- SELECT name, population, area
+-- FROM World
+-- WHERE area >= 3000000
+-- UNION
+-- SELECT name, population, area
+-- FROM World
+-- WHERE population >= 25000000;
+--
+-- This may allow the optimizer to use separate indexes.
+--
+-- Edge Case Handling:
+-- - Assumes area and population are NOT NULL.
+-- - If NULL values exist, comparison will automatically exclude them.
+-- - Large numeric values should fit within column data types.
+--
+-- Execution Order Reminder:
+-- FROM → WHERE → SELECT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT name, population, area
+FROM World
+WHERE area >= 3000000
+   OR population >= 25000000;
