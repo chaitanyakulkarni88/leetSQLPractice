@@ -1,0 +1,62 @@
+-- =========================================================
+-- Problem: 197. Rising Temperature
+-- Category: Advanced Select and Joins (Self Join)
+-- =========================================================
+--
+-- Core Query Logic:
+-- Find weather records where the temperature is higher
+-- than the previous day's temperature.
+--
+-- This requires:
+--   1. Self-joining the Weather table
+--   2. Matching current day with previous day
+--   3. Comparing temperatures
+--
+-- Schema & Relationship Understanding:
+-- Table: Weather
+--   id          (Primary Key)
+--   recordDate  (DATE)
+--   temperature (INT)
+--
+-- Relationship:
+-- Self-join on Weather table
+-- comparing dates offset by 1 day.
+--
+-- Join Strategy Explanation:
+-- We join:
+--   w1.recordDate = DATE_ADD(w2.recordDate, INTERVAL 1 DAY)
+--
+-- Meaning:
+--   w1 → current day
+--   w2 → previous day
+--
+-- We then compare:
+--   w1.temperature > w2.temperature
+--
+-- Time Complexity Consideration:
+-- O(n) with proper indexing.
+-- Without index on recordDate → potential O(n^2).
+--
+-- Indexing & Performance Thoughts:
+-- Critical index:
+--   CREATE INDEX idx_weather_date
+--   ON Weather(recordDate);
+--
+-- This allows efficient lookup of previous day's record.
+--
+-- Edge Case Handling:
+-- - If previous day record does not exist → excluded.
+-- - Date gaps automatically excluded.
+-- - Assumes recordDate is unique per day.
+--
+-- Execution Order Reminder:
+-- FROM → JOIN → WHERE → SELECT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT w1.id
+FROM Weather w1
+INNER JOIN Weather w2
+        ON w1.recordDate = DATE_ADD(w2.recordDate, INTERVAL 1 DAY)
+WHERE w1.temperature > w2.temperature;
