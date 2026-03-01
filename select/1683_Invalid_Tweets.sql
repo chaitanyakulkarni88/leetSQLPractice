@@ -1,0 +1,52 @@
+-- =========================================================
+-- Problem: 1683. Invalid Tweets
+-- Category: Select
+-- =========================================================
+--
+-- Core Query Logic:
+-- Retrieve tweet_id for tweets where the content length
+-- exceeds 15 characters.
+--
+-- A tweet is considered invalid if:
+--   LENGTH(content) > 15
+--
+-- Schema & Relationship Understanding:
+-- Table: Tweets
+-- Columns:
+--   tweet_id  (INT)
+--   content   (VARCHAR)
+--
+-- Single-table query. No joins involved.
+--
+-- Join Strategy Explanation:
+-- Not applicable (single table).
+--
+-- Time Complexity Consideration:
+-- O(n) table scan.
+-- LENGTH() must be evaluated for each row.
+--
+-- Indexing & Performance Thoughts:
+-- Applying functions (LENGTH) on a column prevents
+-- normal index usage on that column.
+--
+-- In production, if this constraint is frequent:
+--   - Enforce length at application level
+--   - Use CHECK constraints
+--   - Store content length in a separate column
+--
+-- Edge Case Handling:
+-- - Exactly 15 characters is VALID.
+-- - Only content length > 15 is invalid.
+-- - Assumes content is NOT NULL.
+--   If NULL exists, LENGTH(NULL) returns NULL
+--   and row is excluded automatically.
+--
+-- Execution Order Reminder:
+-- FROM → WHERE → SELECT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT tweet_id
+FROM Tweets
+WHERE LENGTH(content) > 15;
