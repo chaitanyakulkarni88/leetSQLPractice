@@ -1,0 +1,61 @@
+-- =========================================================
+-- Problem: 1148. Article Views I
+-- Category: Select
+-- =========================================================
+--
+-- Core Query Logic:
+-- Retrieve distinct author_ids where the author viewed
+-- their own article.
+--
+-- Condition:
+--   author_id = viewer_id
+--
+-- Schema & Relationship Understanding:
+-- Table: Views
+-- Columns:
+--   article_id  (INT)
+--   author_id   (INT)
+--   viewer_id   (INT)
+--   view_date   (DATE)
+--
+-- Single-table query.
+-- No joins required.
+--
+-- Important Detail:
+-- The same author may view multiple articles or
+-- the same article multiple times.
+-- The result must return UNIQUE author_ids.
+--
+-- Join Strategy Explanation:
+-- Not applicable (single table).
+--
+-- Time Complexity Consideration:
+-- O(n) table scan.
+-- DISTINCT may require sorting or hashing internally.
+--
+-- Indexing & Performance Thoughts:
+-- A composite index on (author_id, viewer_id)
+-- can improve filtering performance.
+--
+-- Example:
+-- CREATE INDEX idx_views_author_viewer
+-- ON Views(author_id, viewer_id);
+--
+-- If dataset is large, DISTINCT may use temporary
+-- storage depending on execution plan.
+--
+-- Edge Case Handling:
+-- - Duplicate rows must not produce duplicate output.
+-- - NULL comparisons automatically exclude NULL values
+--   because NULL = NULL is UNKNOWN in SQL.
+--
+-- Execution Order Reminder:
+-- FROM → WHERE → SELECT → DISTINCT → ORDER BY
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT DISTINCT author_id AS id
+FROM Views
+WHERE author_id = viewer_id
+ORDER BY id;
