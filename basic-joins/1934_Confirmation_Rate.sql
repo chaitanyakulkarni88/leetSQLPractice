@@ -61,8 +61,10 @@
 
 SELECT s.user_id,
        ROUND(
+       -- COALESCE(
            IFNULL(
-               SUM(c.action = 'confirmed') / COUNT(c.action),
+               SUM(CASE WHEN c.action = 'confirmed' THEN 1 ELSE 0 END) / COUNT(c.action),
+               -- AVG(c.action = 'confirmed')
                0
            ),
            2
