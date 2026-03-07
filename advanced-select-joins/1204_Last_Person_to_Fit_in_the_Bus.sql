@@ -1,6 +1,6 @@
 -- =========================================================
 -- Problem: 1204. Last Person to Fit in the Bus
--- Category: Advanced Select / Window Functions
+-- Category: Advanced Select / Window Functions / Correlated Subquery
 -- =========================================================
 --
 -- Core Query Logic:
@@ -58,4 +58,78 @@ FROM (
 ) t
 WHERE cumulative_weight <= 1000
 ORDER BY cumulative_weight DESC
+LIMIT 1;
+
+-- =========================================================
+-- Correlated Subquery Strategy Explanation
+-- =========================================================
+--
+-- A correlated subquery is executed once per row of the
+-- outer query and references columns from that outer row.
+--
+-- In this query:
+--
+--   SELECT SUM(weight)
+--   FROM Queue q2
+--   WHERE q2.turn <= q1.turn
+--
+-- computes the cumulative weight of all passengers who
+-- boarded up to the current person's turn.
+--
+-- This effectively simulates a running total without
+-- using window functions.
+--
+--
+-- =========================================================
+-- Time Complexity Consideration
+-- =========================================================
+--
+-- For each row in Queue, the correlated subquery scans
+-- earlier rows to compute the cumulative sum.
+--
+-- Worst-case complexity:
+--
+--   O(n²)
+--
+-- because each row may scan many previous rows.
+--
+-- This approach is therefore less efficient than
+-- window functions for large datasets.
+--
+-- =========================================================
+-- Indexing & Performance Thoughts
+-- =========================================================
+--
+-- Recommended index:
+--
+--   CREATE INDEX idx_queue_turn
+--   ON Queue(turn);
+--
+-- This allows the correlated subquery to efficiently
+-- locate rows where:
+--
+--   q2.turn <= q1.turn
+--
+-- =========================================================
+-- SQL Logical Execution Order
+-- =========================================================
+--
+-- FROM Queue (outer query row)
+-- → correlated subquery computes running sum
+-- → WHERE filters rows exceeding weight limit
+-- → ORDER BY descending turn
+-- → LIMIT 1 selects the last valid passenger
+--
+-- =========================================================
+-- Clean, Production-Ready SQL
+-- =========================================================
+
+SELECT person_name
+FROM Queue q1
+WHERE (
+    SELECT SUM(weight)
+    FROM Queue q2
+    WHERE q2.turn <= q1.turn
+) <= 1000
+ORDER BY turn DESC
 LIMIT 1;
