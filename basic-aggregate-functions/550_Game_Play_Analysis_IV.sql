@@ -62,6 +62,6 @@ FROM (
     FROM Activity
     GROUP BY player_id
 ) first_logins
-LEFT JOIN Activity a
+INNER JOIN Activity a
        ON a.player_id = first_logins.player_id
       AND a.event_date = DATE_ADD(first_logins.first_login, INTERVAL 1 DAY);
