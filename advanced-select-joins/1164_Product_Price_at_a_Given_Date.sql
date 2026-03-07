@@ -1,6 +1,6 @@
 -- =========================================================
 -- Problem: 1164. Product Price at a Given Date
--- Category: Subqueries / Aggregation
+-- Category: Subqueries / Aggregation / Join-Back Pattern
 -- =========================================================
 --
 -- Core Query Logic:
@@ -75,3 +75,56 @@ LEFT JOIN (
     )
 ) pr
 ON p.product_id = pr.product_id;
+
+-- =========================================================
+-- GROUP BY Strategy Explanation
+-- =========================================================
+--
+-- We first compute the latest price change before the target date:
+--
+--   SELECT product_id,
+--          MAX(change_date)
+--   FROM Products
+--   WHERE change_date <= '2019-08-16'
+--   GROUP BY product_id
+--
+-- This identifies the correct price version per product.
+--
+-- We then join back to the Products table to obtain new_price.
+--
+-- This pattern is known as the:
+--
+--   "Aggregation + Join Back"
+--
+-- pattern, commonly used to retrieve the latest record per group.
+
+-- =========================================================
+-- SQL Logical Execution Order
+-- =========================================================
+--
+-- FROM (Products)
+-- → WHERE (filter valid dates)
+-- → GROUP BY (compute latest change_date)
+-- → JOIN back to Products
+-- → LEFT JOIN with product list
+-- → SELECT price with COALESCE
+--
+--
+-- =========================================================
+-- Clean, Production-Ready SQL
+-- =========================================================
+
+SELECT p.product_id,
+       COALESCE(pr.new_price, 10) AS price
+FROM (SELECT DISTINCT product_id FROM Products) p
+LEFT JOIN (
+        SELECT product_id,
+               MAX(change_date) AS latest_date
+        FROM Products
+        WHERE change_date <= '2019-08-16'
+        GROUP BY product_id
+) latest
+ON p.product_id = latest.product_id
+LEFT JOIN Products pr
+ON pr.product_id = latest.product_id
+AND pr.change_date = latest.latest_date;
