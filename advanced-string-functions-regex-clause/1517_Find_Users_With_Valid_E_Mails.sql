@@ -6,8 +6,8 @@
 -- Core Query Logic:
 -- Retrieve users whose email:
 --   1. Starts with a letter
---   2. May contain letters, digits, underscores, dots
---   3. Ends with "@leetcode.com"
+--   2. May contain letters, digits, underscores, dash, dots
+--   3. Ends with "@leetcode.com" and case sensitive
 --
 -- Valid pattern:
 --   ^[A-Za-z][A-Za-z0-9._]*@leetcode\.com$
@@ -52,4 +52,6 @@ SELECT user_id,
        name,
        mail
 FROM Users
-WHERE mail REGEXP '^[A-Za-z][A-Za-z0-9._]*@leetcode\\.com$';
+WHERE REGEXP_LIKE(mail,
+                  '^[A-Za-z][A-Za-z0-9._-]*@leetcode\\.com$',
+                  'c');
