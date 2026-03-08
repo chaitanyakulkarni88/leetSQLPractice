@@ -1,0 +1,81 @@
+-- =========================================================
+-- Problem: 182. Duplicate Emails
+-- Category: Window Functions / Duplicate Detection
+-- =========================================================
+--
+-- Core Query Logic:
+-- Identify email addresses that appear more than once
+-- in the Person table using a window function.
+--
+-- Window functions allow us to compute counts across
+-- partitions while preserving the original row structure.
+--
+-- Steps:
+--   1. Partition rows by Email
+--   2. Use COUNT(*) OVER() to compute frequency per email
+--   3. Filter rows where frequency > 1
+--   4. Use DISTINCT to return each duplicated email once
+--
+-- Schema Understanding:
+-- Table: Person
+--   id     (INT, Primary Key)
+--   email  (VARCHAR)
+--
+-- Relationship:
+-- Each row represents a person entry.
+-- Multiple rows may share the same email address.
+--
+-- Window Function Strategy:
+-- COUNT(*) OVER (PARTITION BY email)
+--
+-- Explanation:
+-- - PARTITION BY email creates independent windows
+--   for each unique email.
+-- - COUNT(*) counts the number of rows within each
+--   email partition.
+-- - Unlike GROUP BY, rows are not collapsed.
+--
+-- Example Window Partition:
+--
+-- email       count
+-- ------------------
+-- a@b.com       2
+-- a@b.com       2
+-- c@d.com       1
+--
+-- Filtering Logic:
+-- email_count > 1 identifies duplicated emails.
+--
+-- DISTINCT ensures the final output returns each
+-- duplicated email only once.
+--
+-- Time Complexity Consideration:
+-- O(n log n) due to partition processing depending
+-- on database execution strategy.
+--
+-- Indexing & Performance Thoughts:
+-- Recommended index:
+--
+-- CREATE INDEX idx_person_email
+-- ON Person(email);
+--
+-- Helps partitioning and duplicate detection.
+--
+-- Edge Case Handling:
+-- - Emails appearing once should not be returned.
+-- - Multiple duplicate rows must return only
+--   one email in final output.
+--
+-- Execution Order Reminder:
+-- FROM → WINDOW FUNCTION → WHERE → SELECT DISTINCT
+--
+-- Clean, Production-Ready SQL:
+-- =========================================================
+
+SELECT DISTINCT email
+FROM (
+    SELECT email,
+           COUNT(*) OVER (PARTITION BY email) AS email_count
+    FROM Person
+) t
+WHERE email_count > 1;
