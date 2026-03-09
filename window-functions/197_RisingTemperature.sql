@@ -4,17 +4,24 @@
 -- =========================================================
 --
 -- Core Query Logic:
--- Identify days where the temperature is higher than the
--- previous day.
+-- Find days where the temperature is higher than the
+-- temperature of the previous calendar day.
 --
--- We compare the current day's temperature with the
--- previous day's temperature.
+-- Important:
+-- Using LAG() alone compares the previous row, which may
+-- not represent the previous day if there are gaps in dates.
+--
+-- Therefore we must also verify that the two records are
+-- exactly one day apart.
 --
 -- Steps:
---   1. Order rows by date
---   2. Use LAG() to access the previous day's temperature
---   3. Filter rows where temperature > previous_temperature
---   4. Return the corresponding id
+--   1. Order rows by recordDate
+--   2. Use LAG() to retrieve:
+--        - previous temperature
+--        - previous date
+--   3. Filter rows where:
+--        - temperature increased
+--        - date difference equals 1 day
 --
 -- Schema Understanding:
 -- Table: Weather
@@ -23,29 +30,28 @@
 --   temperature  (INT)
 --
 -- Relationship:
--- Each row represents the temperature recorded on a day.
--- Rows must be ordered chronologically to compare days.
+-- Each row represents temperature recorded on a specific day.
 --
 -- Window Function Strategy:
 -- LAG(temperature) OVER (ORDER BY recordDate)
+-- LAG(recordDate)  OVER (ORDER BY recordDate)
 --
 -- Explanation:
--- - ORDER BY recordDate ensures chronological comparison
--- - LAG() retrieves the temperature from the previous row
--- - If current temperature > previous temperature,
---   then the temperature increased
+-- - LAG(temperature) retrieves the temperature of the
+--   previous record in chronological order.
+-- - LAG(recordDate) retrieves the previous date.
+-- - DATEDIFF(recordDate, prev_date) ensures the rows
+--   represent consecutive calendar days.
 --
 -- Example:
 --
--- id   date        temp   prev_temp
--- ----------------------------------
--- 1    Jan1        10     NULL
--- 2    Jan2        25     10    ← rising
--- 3    Jan3        20     25
--- 4    Jan4        30     20    ← rising
+-- id   date        temp   prev_temp   prev_date
+-- ----------------------------------------------
+-- 1    Dec14       3      NULL        NULL
+-- 2    Dec16       5      3           Dec14
 --
--- Result ids:
--- 2, 4
+-- DATEDIFF(Dec16, Dec14) = 2 → not consecutive
+-- Therefore the row is excluded.
 --
 -- Time Complexity Consideration:
 -- O(n) scan with ordered window processing.
@@ -53,14 +59,14 @@
 -- Indexing & Performance Thoughts:
 -- Recommended index:
 --
--- CREATE INDEX idx_weather_recorddate
+-- CREATE INDEX idx_weather_recordDate
 -- ON Weather(recordDate);
 --
--- Helps optimize ordering.
+-- Improves ordering performance.
 --
 -- Edge Case Handling:
--- - First row has no previous temperature
--- - Only compare rows where a previous day exists
+-- - First row has no previous day → ignored
+-- - Missing days (date gaps) are excluded
 --
 -- Execution Order Reminder:
 -- FROM → WINDOW FUNCTION → FILTER → SELECT
@@ -70,8 +76,11 @@
 SELECT id
 FROM (
     SELECT id,
+           recordDate,
            temperature,
-           LAG(temperature) OVER (ORDER BY recordDate) AS prev_temp
+           LAG(temperature) OVER (ORDER BY recordDate) AS prev_temp,
+           LAG(recordDate) OVER (ORDER BY recordDate) AS prev_date
     FROM Weather
 ) t
-WHERE temperature > prev_temp;
+WHERE temperature > prev_temp
+AND DATEDIFF(recordDate, prev_date) = 1;
