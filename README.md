@@ -1,6 +1,6 @@
 🚀 **LeetSQL50 – Interview Preparation**
 
-This repository contains structured and production-style solutions to the Top 50 SQL Interview Problems (https://leetcode.com/studyplan/top-sql-50/).
+This repository contains structured and production-style solutions to the Top 65 SQL Interview Problems including 15 solutions using windows functions(https://leetcode.com/studyplan/top-sql-50/).
 
 The goal is to strengthen SQL skills required for interviews, focusing not only on correctness — but also on performance, scalability, and clean query design.
 
@@ -29,6 +29,8 @@ Advanced Select and Joins
 Subqueries
 
 Advanced String Functions / Regex / Clause
+
+Windows Functions
 
 🧠 **Solution Structure**
 
@@ -63,6 +65,8 @@ Understanding SQL execution order
 Thinking about indexes and query plans
 
 Managing NULL values and edge cases safely
+
+Various windows functions implementations
 
 ⚙ **Engineering Concepts Practiced**
 
