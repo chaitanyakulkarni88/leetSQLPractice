@@ -35,16 +35,6 @@
 --   - Individual indexes on (area) and (population)
 --   - Query rewrite using UNION to allow better index usage
 --
--- Example alternative (index-friendly pattern):
---
--- SELECT name, population, area
--- FROM World
--- WHERE area >= 3000000
--- UNION
--- SELECT name, population, area
--- FROM World
--- WHERE population >= 25000000;
---
 -- This may allow the optimizer to use separate indexes.
 --
 -- Edge Case Handling:
@@ -62,3 +52,11 @@ SELECT name, population, area
 FROM World
 WHERE area >= 3000000
    OR population >= 25000000;
+
+ SELECT name, population, area
+ FROM World
+ WHERE area >= 3000000
+ UNION
+ SELECT name, population, area
+ FROM World
+ WHERE population >= 25000000;
