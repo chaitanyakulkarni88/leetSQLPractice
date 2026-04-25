@@ -45,7 +45,7 @@
 --
 -- Strategy:
 -- Convert row events (start/end) into columns using
--- conditional aggregation.
+-- conditional aggregation (GROUP BY triggers aggregation → MAX is just a convenient extractor).
 --
 -- For each process:
 --
